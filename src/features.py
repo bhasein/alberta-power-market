@@ -192,6 +192,39 @@ def add_reserve_features(df):
     df['reserve_proxy_pct'] = df['reserve_proxy'] / df['demand']
     return df
 
+def add_interaction_features(df):
+    # ramp stress conditional on system load
+    df["ramp_x_netload"] = (
+        df["abs_net_load_ramp"]
+        * df["net_load"]
+    )
+
+    # ramp stress conditional on reserve margin
+    df["ramp_x_reserve"] = (
+        df["abs_net_load_ramp"]
+        * (-df["reserve_proxy_pct"])
+    )
+
+    # wind drop during high net load
+    df["wind_x_netload"] = (
+        df["gen_wind"]
+        * df["net_load"]
+    )
+
+    # low renewables during high net load
+    df["renewable_x_netload"] = (
+        df["renewable_share"]
+        * df["net_load"]
+    )
+
+    # imports during stress
+    df["imports_x_netload"] = (
+        df["total_imports"]
+        * df["net_load"]
+    )
+
+    return df
+
 def build_features(df):
     df = add_hdd_cdd(df)
     df = add_wind_index(df)
@@ -202,4 +235,6 @@ def build_features(df):
     df = add_import_dependence(df)       # creates total_imports
     df = add_reserve_features(df)        # creates reserve_proxy
     df = add_ramp_features(df)           # now can use both safely
+    df = add_interaction_features(df)
+    
     return df
