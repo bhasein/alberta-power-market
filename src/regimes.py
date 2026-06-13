@@ -4,37 +4,25 @@ import pandas as pd
 
 def add_reserve_regime(df):
 
-    # relaxed thresholds — catches moderate stress not just extremes
-    df["regime_high_net_load"] = (
-        df["net_load"] > df["net_load"].quantile(0.75)  # was 0.85
-    ).astype(int)
+    # in production, theshold must be learned on train only
+    # avoid leakage by using fixed heuristics
 
-    df["regime_low_renewable"] = (
-        df["renewable_share"] < df["renewable_share"].quantile(0.25)  # was 0.15
-    ).astype(int)
+    # when the net load has been above the 75th percentile for the last 30 days, assign value of 1, otherwise 0
+    df['regime_high_net_load'] = (df['net_load'] > df['net_load'].rolling(720).quantile(0.75)).astype(int)
+    
+    # when the renewable share is been less than 0.25, assign value of 1, otherwise 0
+    df['regime_low_renewable'] = (df['renewable_share'] < 0.25).astype(int)
 
-    # high wind instability — volatile wind precedes many scarcity events
-    df["regime_high_wind_instability"] = (
-        df["wind_instability_24h"] > df["wind_instability_24h"].quantile(0.75)
-    ).astype(int)
+    # when the wind instability is above the 75th percentile in the last 30 days, assign value of 1, otherwise 0
+    df['regime_high_wind_instability'] = (df['wind_instability_24h'] > df['wind_instability_24h'].rolling(720).quantile(0.75)).astype(int)
 
-    # high import dependence — already leaning on neighbors
-    df["regime_high_imports"] = (
-        df["total_imports"] > df["total_imports"].quantile(0.75)
-    ).astype(int)
+    # when total imports has been above the 75th percentile in the last 30 days, assign value of 1, otherwise 0
+    df['regime_high_imports'] = (df['total_imports'] > df['total_imports'].rolling(720).quantile(0.75)).astype(int)
 
-    # original combined tightness
-    df["regime_system_tight"] = (
-        (df["regime_high_net_load"] == 1) &
-        (df["regime_low_renewable"] == 1)
-    ).astype(int)
-
-    # extended stress regime — catches moderate conditions
-    df["regime_extended_stress"] = (
-        (df["regime_high_net_load"] == 1) &
-        (df["regime_low_renewable"] == 1) |
-        (df["regime_high_wind_instability"] == 1) &
-        (df["regime_high_imports"] == 1)
+    # system is tight (value of 1) when there is high net load, and low renewable output
+    df['regime_system_tight'] = (
+        (df['regime_high_net_load'] == 1) & 
+        (df['regime_low_renewable'] == 1)
     ).astype(int)
 
     return df

@@ -1,6 +1,10 @@
+import numpy as np
+import pandas as pd
+
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import (
     roc_auc_score,
     precision_score,
@@ -80,6 +84,39 @@ def evaluate_model(model, X_test, y_test):
     print(cm)
 
     return auc, precision, recall, cm
+
+def prepare_forecast_data(df, features, target, split_ratio=0.8):
+    """
+    Time-safe train/test split for forecasting models.
+
+    Uses chronological split instead of random split to prevent
+    future information leaking into training data.
+
+    Parameters
+    ----------
+    df         : DataFrame with lagged features and forward target already built.
+    features   : list of lagged feature column names.
+    target     : forward-looking target (e.g. scarcity_t_plus_1).
+    split_ratio: fraction of data used for training (default 0.8).
+    """
+    data = pd.concat([df[features], df[target]], axis=1).dropna()
+    data = data.sort_index()
+
+    X = data[features]
+    y = data[target]
+
+    split_idx = int(len(data) * split_ratio)
+
+    X_train = X.iloc[:split_idx]
+    X_test  = X.iloc[split_idx:]
+    y_train = y.iloc[:split_idx]
+    y_test  = y.iloc[split_idx:]
+
+    scaler = StandardScaler()
+    X_train = scaler.fit_transform(X_train)
+    X_test  = scaler.transform(X_test)
+
+    return X_train, X_test, y_train, y_test, features
 
 
 
