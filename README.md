@@ -1,148 +1,211 @@
-# Alberta Electricity Market Regime & Price Dynamics
+Alberta Power Market Analysis
 
-A data-driven exploration of Alberta's electricity market, focusing on price formation, weather sensitivity, and regime behavior (normal vs scarcity conditions).
+A data-driven research project exploring scarcity formation, price dynamics, system tightness, and forecasting opportunities within the Alberta electricity market.
 
-This project builds a progressively more structured model of Alberta pool price dynamics using weather data, demand, and market fundamentals, with the goal of understanding both:
-- baseline price behavior under normal system conditions
-- extreme price formation during scarcity events
+Project Overview
 
----
+This project investigates the physical and operational drivers of electricity prices in Alberta’s energy-only market. The objective is to move beyond simple price analysis and develop a systematic understanding of how demand, generation availability, outages, renewable production, imports, and system constraints interact to create scarcity conditions.
 
-## 🔍 Core Research Question
+The project combines electricity market fundamentals with statistical analysis, feature engineering, and predictive modeling to identify the variables most strongly associated with market stress and elevated pool prices.
 
-How do weather conditions, demand, and market fundamentals interact to drive electricity prices in Alberta — and why do standard models fail during scarcity events?
+The long-term goal is to build forecasting frameworks capable of identifying scarcity risk before it occurs.
 
----
+⸻
 
-## ⚙️ Project Structure
+Research Questions
 
-The project is organized into sequential notebooks:
+The project is organized around several core questions:
 
-### 01 — Market Price Exploration
-- Initial analysis of Alberta pool price behavior
-- Time series trends, distributions, and seasonality
-- Identification of extreme price spikes ($999 events)
+* What operational conditions characterize scarcity events?
+* Which system variables contain the strongest scarcity information?
+* How do scarcity conditions develop through time?
+* What role do generation outages, renewable output, and imports play during system stress?
+* Can physically meaningful system-state variables outperform traditional market indicators?
+* How far in advance can scarcity events be forecasted?
 
-### 02 — Weather & Fundamental Relationships
-- Engineering weather-driven features:
-  - Heating Degree Days (HDD)
-  - Cooling Degree Days (CDD)
-  - Wind index (southern Alberta corridor)
-- Correlation analysis between weather, demand, and price
-- First structural insights into price drivers
+⸻
 
-### 03 — Regime Decomposition & Linear Models
-- Baseline linear regression models
-- Inclusion of AECO gas prices (fuel benchmark)
-- Residual analysis and model failure during scarcity events
-- Identification of structural regime differences
+Dataset
 
-### 04 — State-Based Regime Modeling
-- Classification of market states (scarcity vs normal)
-- Threshold-based regime definitions
-- Comparison of model performance across regimes
+The analysis is built from an integrated hourly master dataset covering January 2020 through July 2025.
 
-### 05 — Threshold Regime Systems
-- Sensitivity analysis of scarcity thresholds
-- Stress testing model assumptions
-- Exploration of nonlinear system behavior
+The dataset contains approximately 49,000 hourly observations and includes:
 
----
+Market Variables
 
-## 📊 Key Features Engineered
+* Alberta Pool Price
+* Hour-Ahead Pool Price Forecast
+* Alberta Internal Load (AIL)
+* AECO Natural Gas Prices
 
-- Demand and net load
-- Wind and solar variability
-- Heating and cooling degree days
-- Ramp rates (system stress indicators)
-- Import/export flows
-- AECO gas price (fuel benchmark)
-- Hourly and seasonal time features
+Generation Availability
 
----
+* Fuel-specific available capacity
+* System-wide available generation
+* Thermal availability metrics
 
-## 📈 Key Findings (So Far)
+Outages
 
-### 1. Alberta is a gas-linked electricity market
-AECO gas prices are a dominant structural driver of electricity prices.
+* Total outages
+* Combined-cycle outages
+* Simple-cycle outages
+* Cogeneration outages
+* Fuel-specific outage categories
 
-### 2. Weather effects are nonlinear and regime-dependent
-- Cooling demand (summer) has a stronger price impact than heating demand
-- Wind suppresses prices, but mainly during constrained system conditions
+Interties
 
-### 3. Scarcity events dominate model error
-Extreme prices ($500–$999/MWh) are not explained by weather or demand alone.
+* Imports and exports
+* Net imports
+* Historical intertie capability data
 
-They are driven by:
-- reserve tightness
-- outages
-- renewable variability
-- operational constraints
+Renewable Generation
 
-### 4. Linear models capture baseline behavior only
-R² improves significantly when gas prices are included, but:
-- ~20–30% of variance explained in simple models
-- remaining variance is structural and regime-driven
+* Wind generation
+* Solar generation
+* Renewable share of supply
 
----
+Derived Features
 
-## ⚠️ Key Insight
+* Net load
+* Thermal capacity margin
+* Thermal availability percentage
+* Scarcity event labels
+* Stress score metrics
+* Interaction features
 
-Alberta electricity prices are best understood as a **two-regime system**:
+⸻
 
-### 1. Fundamental Regime
-- Driven by gas prices, demand, and weather
-- Relatively predictable
-- Captured reasonably well by linear models
+Notebook Structure
 
-### 2. Scarcity / Stress Regime
-- Driven by system constraints and operational stress
-- Highly nonlinear and event-driven
-- Responsible for extreme price spikes
+Phase 1 — Market Exploration
 
----
+Notebook 01
 
-## 🧪 Modeling Approach
+Initial market familiarization and exploratory analysis.
 
-- Linear regression baseline models
-- Feature engineering for weather and system state
-- Residual analysis for model failure detection
-- Regime separation via threshold methods
+Notebook 02
 
-Future work will explore:
-- tree-based models (Random Forest, XGBoost)
-- regime classification models
-- probabilistic forecasting of scarcity events
+Weather, load, and renewable generation analysis.
 
----
+Notebook 03
 
-## 🏗️ Data Sources
+Price drivers and descriptive market relationships.
 
-- Alberta Electric System Operator (AESO) pool price data
-- Weather data (Calgary, southern Alberta wind corridor)
-- Import/export flows
-- AECO natural gas benchmark prices
+Notebook 04
 
----
+Early scarcity modeling and feature evaluation.
 
-## 🚧 Status
+Notebook 05
 
-This project is ongoing and evolving from:
-> exploratory data analysis → feature engineering → regime modeling → predictive system modeling
+Interaction effects, stress indicators, and system-state analysis.
 
----
+Notebook 06
 
-## 🎯 Long-Term Goal
+Initial scarcity forecasting experiments.
 
-To build a structured, interpretable model of electricity price formation that can be used for:
+⸻
 
-- energy market analysis
-- infrastructure investment insight
-- trading signal research
-- scenario and stress testing (AESO-style thinking)
+Phase 2 — Scarcity and System Tightness
 
----
+Notebook 07 — Supply Constraints and Scarcity
 
-## 📌 Author
+Major findings:
 
-Brodie Hasein
+* Thermal capacity margin emerged as the strongest scarcity variable tested (AUC = 0.813).
+* Net load remains the dominant demand-side scarcity driver.
+* Renewable withdrawal materially increases scarcity risk.
+* Simple-cycle outages contain more scarcity information than aggregate outage measures.
+* Imports behave primarily as indicators of system stress.
+* Scarcity is best understood as a tightening supply-demand balance rather than a single-variable phenomenon.
+
+Notebook 08 — Scarcity Formation and Temporal Dynamics (in progress)
+
+Focus areas:
+
+* Scarcity event development through time
+* Lead-lag analysis of key operational variables
+* Regime stability testing across years
+* Import indicator versus predictor analysis
+* Forecast-error feature construction
+* Missed-event analysis
+
+Notebook 09 — Scarcity Forecasting (planned)
+
+Planned topics:
+
+* Walk-forward validation
+* Logistic regression baseline
+* Multi-horizon forecasting
+* Probability calibration
+* Forecast performance across market regimes
+
+⸻
+
+Key Findings To Date
+
+Thermal Capacity Margin
+
+Thermal capacity margin is currently the strongest scarcity indicator identified in the project.
+
+AUC: 0.813
+
+The results suggest scarcity is fundamentally driven by the relationship between available dispatchable generation and system demand rather than either variable independently.
+
+Net Load
+
+Net load remains the strongest individual demand-side feature.
+
+AUC: 0.780
+
+Scarcity frequency increases substantially as net load rises.
+
+Renewable Generation
+
+Lower renewable output is consistently associated with scarcity events.
+
+Renewable share and wind generation remain among the strongest scarcity-related variables examined.
+
+Simple-Cycle Generation
+
+Simple-cycle outages and simple-cycle capacity relative to load repeatedly emerge as meaningful scarcity indicators, particularly during already-stressed operating conditions.
+
+Imports
+
+Imports increase significantly during scarcity events but currently appear more consistent with a system response than a leading indicator.
+
+⸻
+
+Methodology
+
+The analytical framework follows a structured research process:
+
+1. Data characterization
+2. Univariate analysis
+3. Bivariate analysis
+4. Segmented and regime analysis
+5. Multivariate analysis
+6. Temporal analysis
+7. Statistical validation
+8. Forecast validation
+9. Residual and error analysis
+
+The objective is to build conclusions that remain robust across years, market regimes, and analytical methods.
+
+⸻
+
+Technologies
+
+* Python
+* Pandas
+* NumPy
+* Matplotlib
+* Scikit-learn
+* Jupyter Notebook
+
+⸻
+
+Current Status
+
+The project is transitioning from descriptive scarcity analysis toward forecasting and predictive modeling.
+
+Current work focuses on understanding how scarcity develops before it occurs and identifying which operational signals provide actionable forecasting information.
